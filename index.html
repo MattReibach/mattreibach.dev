@@ -13,129 +13,270 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
+/* ==========================================================================
+   1. Design tokens
+   ========================================================================== */
 :root {
-  --bg: #F5F7F8;
-  --surface: #FFFFFF;
-  --ink: #1C2430;
-  --muted: #5B6673;
-  --rule: #DCE1E6;
-  --accent: #1F5F8B;
-  --code-key: #1F5F8B;
-  --code-str: #3C7A4E;
+  /* Follow the visitor's OS theme. This also themes scrollbars and other
+     browser-drawn UI, and picks the side of each light-dark() pair below. */
+  color-scheme: light dark;
+
+  /* Colors: light-dark(light value, dark value) */
+  --bg:       light-dark(#F5F7F8, #12171D);
+  --surface:  light-dark(#FFFFFF, #18202A);
+  --ink:      light-dark(#1C2430, #E6EAEE);
+  --muted:    light-dark(#5B6673, #98A3AF);
+  --rule:     light-dark(#DCE1E6, #2A323C);
+  --accent:   light-dark(#1F5F8B, #7DB4DA);
+  --code-key: light-dark(#1F5F8B, #7DB4DA);
+  --code-str: light-dark(#3C7A4E, #8FC79F);
+
+  /* Type */
   --sans: "Schibsted Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
   box-sizing: border-box;
   padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #12171D; --surface: #18202A; --ink: #E6EAEE; --muted: #98A3AF;
-    --rule: #2A323C; --accent: #7DB4DA; --code-key: #7DB4DA; --code-str: #8FC79F;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #12171D; --surface: #18202A; --ink: #E6EAEE; --muted: #98A3AF;
-  --rule: #2A323C; --accent: #7DB4DA; --code-key: #7DB4DA; --code-str: #8FC79F;
-}
+
+/* Optional manual override, e.g. from a future theme toggle */
+:root[data-theme="light"] { color-scheme: light; }
+:root[data-theme="dark"]  { color-scheme: dark; }
+
+/* ==========================================================================
+   2. Base
+   ========================================================================== */
 *, *::before, *::after { box-sizing: inherit; }
+
 html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+
 body {
-  margin: 0; background: var(--bg); color: var(--ink);
-  font-family: var(--sans); font-size: 1.0625rem; line-height: 1.6;
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 1.0625rem;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
-a { color: var(--accent); text-underline-offset: 3px; text-decoration-thickness: 1px; }
-a:hover { text-decoration-thickness: 2px; }
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
 
-.wrap { max-width: 980px; margin: 0 auto; padding: 0 1.5rem; }
-
-/* Header */
-.top { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 0; }
-.top .mark { font-weight: 700; color: var(--ink); text-decoration: none; }
-.top nav { display: flex; gap: 1.25rem; font-size: .95rem; }
-.top nav a { color: var(--muted); text-decoration: none; }
-.top nav a:hover { color: var(--ink); }
-
-/* Hero */
-.hero { display: grid; grid-template-columns: 1.2fr 1fr; gap: 3rem; align-items: center; padding: 4rem 0 5rem; }
-.hero h1 {
-  font-size: clamp(2.6rem, 6vw, 4.25rem); line-height: 1.02; letter-spacing: -0.035em;
-  font-weight: 800; margin: 0 0 1.25rem;
+a {
+  color: var(--accent);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
 }
-.hero p { color: var(--muted); font-size: 1.2rem; max-width: 34ch; margin: 0 0 2rem; }
-.actions { display: flex; flex-wrap: wrap; gap: .75rem; }
-.hero p.alt-format { font-size: .9rem; margin: .9rem 0 0; }
+a:hover { text-decoration-thickness: 2px; }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ==========================================================================
+   3. Layout
+   ========================================================================== */
+.wrap {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Each content section: label column + body column */
+section {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 2rem;
+  padding: 3.5rem 0;
+  border-top: 1px solid var(--rule);
+}
+section > h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: .2rem 0 0;
+}
+
+.body { max-width: 62ch; }
+.body > p:first-child { margin-top: 0; }
+
+/* Stacked items: space below each one except the last.
+   Each item type sets its own --item-space. */
+:is(.company, .role, .project, .post):not(:last-child) {
+  padding-bottom: var(--item-space);
+}
+.company { --item-space: 2.75rem; }
+.role    { --item-space: 1.5rem; }
+.project { --item-space: 2.25rem; }
+.post    { --item-space: 1.75rem; }
+
+/* ==========================================================================
+   4. Components
+   ========================================================================== */
+
+/* Buttons ------------------------------------------------------------------ */
 .btn {
-  display: inline-block; padding: .7rem 1.2rem; border-radius: 6px; font-weight: 500;
-  text-decoration: none; border: 1px solid var(--ink);
+  display: inline-block;
+  padding: .7rem 1.2rem;
+  border: 1px solid var(--ink);
+  border-radius: 6px;
+  font-weight: 500;
+  text-decoration: none;
 }
 .btn.primary { background: var(--ink); color: var(--bg); }
 .btn.secondary { color: var(--ink); }
-.btn:hover { text-decoration: none; opacity: .88; }
+.btn:hover { opacity: .88; text-decoration: none; }
 
+/* Code-response card ------------------------------------------------------- */
 .response {
-  background: var(--surface); border: 1px solid var(--rule); border-radius: 10px;
-  font-family: var(--mono); font-size: .85rem; line-height: 1.7; overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  font-family: var(--mono);
+  font-size: .85rem;
+  line-height: 1.7;
+  overflow: hidden;
 }
-.response .req { padding: .7rem 1rem; border-bottom: 1px solid var(--rule); color: var(--muted); display: flex; justify-content: space-between; gap: 1rem; }
+.response .req {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .7rem 1rem;
+  border-bottom: 1px solid var(--rule);
+  color: var(--muted);
+}
 .response .req b { color: var(--ink); font-weight: 500; }
 .response .endpoint { color: var(--muted); text-decoration: none; }
 .response .endpoint:hover { color: var(--ink); text-decoration: underline; }
 .response .ok { color: var(--code-str); }
-.response pre { margin: 0; padding: 1rem; overflow-x: auto; color: var(--ink); }
-.k { color: var(--code-key); } .s { color: var(--code-str); }
+.response pre {
+  margin: 0;
+  padding: 1rem;
+  overflow-x: auto;
+  color: var(--ink);
+}
 
-/* Sections */
-section { display: grid; grid-template-columns: 200px 1fr; gap: 2rem; padding: 3.5rem 0; border-top: 1px solid var(--rule); }
-section > h2 { font-size: 1rem; font-weight: 700; margin: .2rem 0 0; }
-.body { max-width: 62ch; }
-.body > p:first-child { margin-top: 0; }
+/* Syntax highlighting */
+.k { color: var(--code-key); }
+.s { color: var(--code-str); }
 
-.company { padding-bottom: 2.75rem; }
-.company:last-child { padding-bottom: 0; }
-.company h3 { font-size: 1.3rem; margin: 0; font-weight: 800; letter-spacing: -0.01em; }
+/* ==========================================================================
+   5. Page sections (in page order)
+   ========================================================================== */
+
+/* Header ------------------------------------------------------------------- */
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 0;
+}
+.top .mark { color: var(--ink); font-weight: 700; text-decoration: none; }
+.top nav { display: flex; gap: 1.25rem; font-size: .95rem; }
+.top nav a { color: var(--muted); text-decoration: none; }
+.top nav a:hover { color: var(--ink); }
+
+/* Hero --------------------------------------------------------------------- */
+.hero {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 3rem;
+  align-items: center;
+  padding: 4rem 0 5rem;
+}
+.hero h1 {
+  margin: 0 0 1.25rem;
+  font-size: clamp(2.6rem, 6vw, 4.25rem);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+}
+.hero p {
+  max-width: 34ch;
+  margin: 0 0 2rem;
+  color: var(--muted);
+  font-size: 1.2rem;
+}
+.actions { display: flex; flex-wrap: wrap; gap: .75rem; }
+.hero p.alt-format { margin: .9rem 0 0; font-size: .9rem; }
+
+/* Experience --------------------------------------------------------------- */
+.company h3 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
 .company > .org { margin: 0 0 1.25rem; }
-.role h4 { font-size: 1.05rem; margin: 0; font-weight: 700; }
-.role ul { margin-top: .5rem; }
-.role { padding-bottom: 1.5rem; }
-.role:last-child { padding-bottom: 0; }
-.role-head { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .25rem 1rem; align-items: baseline; }
-.role h3 { font-size: 1.15rem; margin: 0; font-weight: 700; }
-.role .when { color: var(--muted); font-size: .95rem; font-variant-numeric: tabular-nums; }
-.role .org { color: var(--muted); margin: .1rem 0 .6rem; }
+
+.role-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: .25rem 1rem;
+}
+.role h4 { margin: 0; font-size: 1.05rem; font-weight: 700; }
+.role .when {
+  color: var(--muted);
+  font-size: .95rem;
+  font-variant-numeric: tabular-nums;
+}
 .role ul { margin: 0; padding-left: 1.1rem; }
 .role li { margin-bottom: .35rem; }
 
-.project { padding-bottom: 2.25rem; }
-.project:last-child { padding-bottom: 0; }
-.project h3 { font-size: 1.15rem; margin: 0 0 .4rem; }
+/* Selected work ------------------------------------------------------------ */
+.project h3 { margin: 0 0 .4rem; font-size: 1.15rem; }
 .project p { margin: 0 0 .6rem; }
-.stack { color: var(--muted); font-size: .95rem; margin: 0; }
+.stack { color: var(--muted); font-size: .95rem; }
 
-.intro { color: var(--muted); margin: 0 0 2rem; }
-.post { padding-bottom: 1.75rem; }
-.post:last-child { padding-bottom: 0; }
-.post h3 { font-size: 1.15rem; margin: 0 0 .25rem; line-height: 1.35; }
+/* Writing ------------------------------------------------------------------ */
+.intro { margin: 0 0 2rem; color: var(--muted); }
+.post h3 { margin: 0 0 .25rem; font-size: 1.15rem; line-height: 1.35; }
 .post h3 a { color: var(--ink); text-decoration: none; }
 .post h3 a:hover { color: var(--accent); text-decoration: underline; }
-.post .meta { color: var(--muted); font-size: .9rem; margin: 0 0 .4rem; font-variant-numeric: tabular-nums; }
 .post p { margin: 0; }
+.post .meta {
+  margin: 0 0 .4rem;
+  color: var(--muted);
+  font-size: .9rem;
+  font-variant-numeric: tabular-nums;
+}
 
-.skills { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem 2rem; }
-.skills h3 { font-size: 1rem; margin: 0 0 .4rem; }
+/* Skills ------------------------------------------------------------------- */
+.skills {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem 2rem;
+}
+.skills h3 { margin: 0 0 .4rem; font-size: 1rem; }
 .skills p { margin: 0; color: var(--muted); }
 
-.contact-line { font-size: clamp(1.4rem, 3vw, 1.9rem); font-weight: 700; letter-spacing: -0.02em; line-height: 1.25; margin: 0 0 1.25rem; }
+/* Contact ------------------------------------------------------------------ */
+.contact-line {
+  margin: 0 0 1.25rem;
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
 .links { display: flex; flex-wrap: wrap; gap: 1.5rem; }
 
-footer { border-top: 1px solid var(--rule); padding: 2rem 0 3rem; color: var(--muted); font-size: .9rem; }
+/* Footer ------------------------------------------------------------------- */
+footer {
+  padding: 2rem 0 3rem;
+  border-top: 1px solid var(--rule);
+  color: var(--muted);
+  font-size: .9rem;
+}
 
+/* ==========================================================================
+   6. Responsive
+   ========================================================================== */
 @media (max-width: 760px) {
-  .hero { grid-template-columns: 1fr; padding: 2rem 0 3.5rem; gap: 2.5rem; }
-  section { grid-template-columns: 1fr; gap: 1rem; padding: 2.5rem 0; }
   .top nav { display: none; }
+  .hero { grid-template-columns: 1fr; gap: 2.5rem; padding: 2rem 0 3.5rem; }
+  section { grid-template-columns: 1fr; gap: 1rem; padding: 2.5rem 0; }
 }
 </style>
 </head>
