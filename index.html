@@ -66,6 +66,7 @@ a:hover { text-decoration-thickness: 2px; }
 }
 .hero p { color: var(--muted); font-size: 1.2rem; max-width: 34ch; margin: 0 0 2rem; }
 .actions { display: flex; flex-wrap: wrap; gap: .75rem; }
+.hero p.alt-format { font-size: .9rem; margin: .9rem 0 0; }
 .btn {
   display: inline-block; padding: .7rem 1.2rem; border-radius: 6px; font-weight: 500;
   text-decoration: none; border: 1px solid var(--ink);
@@ -158,8 +159,9 @@ footer { border-top: 1px solid var(--rule); padding: 2rem 0 3rem; color: var(--m
         <p>Developer Relations engineer with eight years of DevRel experience and a background in full stack development. I build the integrations, client libraries, docs, and content that get developers from first call to working app.</p>
         <div class="actions">
           <a class="btn primary" href="#contact">Get in touch</a>
-          <a class="btn secondary" href="/resume.pdf" target="_blank" rel="noopener">Download resume</a>
+          <a class="btn secondary" href="/resume.pdf" target="_blank" rel="noopener">Download resume (PDF)</a>
         </div>
+        <p class="alt-format">Prefer plain text? <a href="/resume.md" target="_blank" rel="noopener">View the resume as Markdown</a></p>
       </div>
       <div class="response" aria-label="Profile summary formatted as an API response">
         <div class="req"><a class="endpoint" href="/v1/people/matt.json" title="Try it"><b>GET</b> /v1/people/matt</a><span class="ok">200 OK</span></div>
